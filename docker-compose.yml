@@ -1,0 +1,40 @@
+version: '3.1'
+services:
+  app:
+    build: .
+    volumes:
+      - .:/django
+    ports:
+      - "8000:8000"
+    image: app:django
+    container_name: sistemaEcommerce
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+  db:
+    restart: always
+    image: postgres
+    container_name: postgres 
+    environment:
+      - POSTGRES_USER=demo
+      - POSTGRES_PASSWORD=123456  
+      - POSTGRES_DB=demo
+      - POSTGRES_PORT=5432
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin 
+    depends_on:
+      - db
+    ports:
+      - "5051:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: postgres@postgres.com
+      PGADMIN_DEFAULT_PASSWORD: 123456
+    restart: always
+
+volumes:
+  postgres_data:
