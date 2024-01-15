@@ -1,5 +1,9 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from django.contrib.auth.models import AbstractUser, PermissionsMixin
+
+
+from api.managers import GerirUsuario
 
 ESTADOS = (
     ('AC', 'Acre'),
@@ -59,10 +63,19 @@ class Produto(models.Model):
 
     def __str__(self):
         return self.nome
+    
 
-
-class User(models.Model):
+class User(AbstractUser, PermissionsMixin):
     nome = models.CharField(max_length=180)
+    email= models.CharField(max_length=256,
+                            unique=True,
+                            validators=[
+                                RegexValidator(
+                                    regex='^\[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$',
+                                    message="Email invalido",
+                                    code='email_invalido'
+                                )
+                            ])
     idade = models.IntegerField(default=0)
     celular = models.CharField(max_length=15,
                                validators=[
@@ -80,6 +93,18 @@ class User(models.Model):
                                    code='cpf_invalido'
                                )
                            ])
+    staff = models.BooleanField(default=False)
+    superUser = models.BooleanField(default=False)
+
+    USERNAME_FIELD = "email"
+
+    REQUIRED_FIELDS = [ "nome", "cpf", "celular"]
+
+    objects = GerirUsuario()
+
+    def __str__(self):
+        return self.nome
+    
 
 class EnderecoUsuario(models.Model):
     cpf_user = models.ForeignKey(User, on_delete=models.CASCADE)
