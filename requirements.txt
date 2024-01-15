@@ -1,6 +1,7 @@
 asgiref==3.7.2
-Django==5.0.1
+Django==5.0.1      
 django-filter==23.5
+django-postgres-extensions==0.9.3
 djangorestframework==3.14.0
 psycopg2-binary==2.9.9
 pytz==2023.3.post1
