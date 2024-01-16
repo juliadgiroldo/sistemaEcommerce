@@ -10,7 +10,7 @@ class GerirUsuario(BaseUserManager):
         except:
             raise ValueError(_("Insera um e-mail valido"))
         
-    def criar_usuario(self,email, nome, cpf, celular, password, **extrafields):
+    def create_user(self,email, nome, cpf, celular, password=None, **extrafields):
         if email:
             email= self.normalize_email(email)
             self.validar_email(email)
@@ -28,7 +28,7 @@ class GerirUsuario(BaseUserManager):
         user.save(using=self._db)
         return user
     
-    def criar_superuser(self,email, nome, cpf, celular, password, **extrafields):
+    def criar_superuser(self,email, nome, cpf, celular, password=None, **extrafields):
         extrafields.setdefault("staff", True)
         extrafields.setdefault("superUser", True)
 
