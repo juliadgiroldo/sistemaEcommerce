@@ -74,12 +74,12 @@ class LoginUserSerializer(serializers.ModelSerializer):
         
 
 class AvaliacaoUserSerializer(serializers.ModelSerializer):
-    usuario = serializers.CharField(source='user.id')
+    usuario = serializers.PrimaryKeyRelatedField(source='user', read_only=True)
 
     class Meta:
         model = AvaliacaoUser
-        fields = ['id', 'usuario', 'descricao', 'nota']
+        fields = ['id', 'usuario','produto_id', 'descricao', 'nota']
 
     def create(self, validated_data):
         produto_id = self.context.get('produto_id')
-        return AvaliacaoUser.objects.create(produto_id=produto_id, **validated_data)
+        return AvaliacaoUser.objects.create(produto_id= produto_id, **validated_data)

@@ -46,8 +46,7 @@ class AvaliacaoUserViewSet(viewsets.ModelViewSet):
     }
 
     def get_serializer_context(self):
-        produto_id = self.kwargs.get("produto_pk")
-        return {"produto_id": produto_id}
+        return {"produto_id": self.kwargs.get("produto_id")}
     
 class createAccountUser(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)

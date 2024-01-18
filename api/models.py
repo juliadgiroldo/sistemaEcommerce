@@ -164,4 +164,4 @@ class AvaliacaoUser(models.Model):
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
     descricao = models.CharField(max_length=300)
     nota = models.IntegerField()
-    user_email = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_email = models.CharField(max_length=50)
