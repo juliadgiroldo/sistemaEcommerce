@@ -1,11 +1,13 @@
 from rest_framework import viewsets, status
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication
-from .models import Categoria, Fornecedor, User, Produto, AvaliacaoUser
-from . serializers import CategoriaSerializer, FornecedorSerializer, LoginUserSerializer, UserCRiarContaSerializer, ProdutoSerializer,AvaliacaoUserSerializer
+from .models import Categoria, Fornecedor, PedidoItem, User, Produto, AvaliacaoUser
+from . serializers import CarrinhoSerializer, CategoriaSerializer, FornecedorSerializer, LoginUserSerializer, PedidoFinalSerializer, UserCRiarContaSerializer, ProdutoSerializer,AvaliacaoUserSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin
 
 class CategoriaViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
@@ -27,6 +29,9 @@ class ProdutoViewwSet(viewsets.ModelViewSet):
     }
     pagination_class = PageNumberPagination
 
+class PedidioFinalViewSet(viewsets.ModelViewSet):
+    queryset = PedidoItem.objects.all()
+    serializer_class = PedidoFinalSerializer
 class ForncedorViewSet(viewsets.ModelViewSet):
     queryset = Fornecedor.objects.all()
     serializer_class = FornecedorSerializer
@@ -36,6 +41,10 @@ class ForncedorViewSet(viewsets.ModelViewSet):
         'codigo': ['exact']
     }
     pagination_class = PageNumberPagination
+
+class CarrinhoViewSet(CreateModelMixin,RetrieveModelMixin, GenericViewSet):
+    queryset = PedidoItem.objects.all()
+    serializer_class = CarrinhoSerializer
 
 class AvaliacaoUserViewSet(viewsets.ModelViewSet):
     queryset = AvaliacaoUser.objects.all()

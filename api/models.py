@@ -126,9 +126,6 @@ class Fornecedor(models.Model):
     def __str__(self):
         return self.codigo
 
-class Estoque(models.Model):
-    quantidade = models.IntegerField()
-    quantidade_min = models.IntegerField()
 
 class Produto(models.Model):
     codigo = models.CharField(max_length=10, unique=True)
@@ -141,24 +138,18 @@ class Produto(models.Model):
     def __str__(self):
         return self.nome
     
+class Carrinho(models.Model):
+    criado = models.DateField(auto_now_add=True)
 
+    def __str__(self):
+        return str(self.id)
+    
 class PedidoItem(models.Model):
-    codigo = models.CharField(max_length=10, unique=True)
     cpf_user = models.ForeignKey(User, on_delete=models.CASCADE)
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
     quantidade = models.IntegerField()
+    carrinho = models.ForeignKey(Carrinho, on_delete=models.CASCADE)
 
-    def total_pedido_item(self):
-        total_item = self.quantidade * self.produto.preco
-        return total_item
-    
-class Carrinho(models.Model):
-    produtos = models.ManyToManyField(PedidoItem)
-    cpf_user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    def calcular_total(self):
-        total_pedido = sum(item.total_pedido_item() for item in self.produtos.all())
-        return total_pedido
     
 class AvaliacaoUser(models.Model):
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
