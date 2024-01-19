@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate, get_user_model
-from .models import Carrinho, Categoria, PedidoItem,  Produto, Fornecedor, User, AvaliacaoUser
+from .models import Categoria,  Produto, Fornecedor, User, AvaliacaoUser
 from rest_framework.exceptions import AuthenticationFailed
 
 UserModel = get_user_model()
@@ -27,6 +27,7 @@ class ProdutoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Produto
         fields = ['id', 'codigo', 'nome', 'preco', 'categoria', 'descricao', 'fornecedor']
+
 
 class UserCriarContaSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68, min_length=6, write_only=True)
@@ -75,43 +76,13 @@ class LoginUserSerializer(serializers.ModelSerializer):
         
 
 class AvaliacaoUserSerializer(serializers.ModelSerializer):
-    usuario = serializers.PrimaryKeyRelatedField(source='user', read_only=True)
+    user = serializers.EmailField(max_length=256, min_length=6)
 
     class Meta:
         model = AvaliacaoUser
-        fields = ['id', 'usuario', 'descricao', 'nota']
+        fields = ['id','user', 'descricao', 'nota']
 
     def create(self, validated_data):
         produto_id = self.context.get('produto_id')
         return AvaliacaoUser.objects.create(produto_id= produto_id, **validated_data)
-    
-class  PedidoSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Produto
-        fields = ['id', 'nome', 'preco']
-
-    
-class PedidoFinalSerializer(serializers.ModelSerializer):
-    pedido = PedidoSerializer(many=False)
-    sub_total = serializers.SerializerMethodField(method_name="subTotal")
-    class Meta:
-        model = PedidoItem
-        fields = ['id', 'carrinho','pedido', 'quantidade', 'sub_total']
-
-    def subTotal(self, pedido: PedidoItem):
-        return pedido.quantidade * pedido.produto.preco
-
-class CarrinhoSerializer(serializers.ModelSerializer):
-    produtos = PedidoFinalSerializer(many=True)
-    total = serializers.SerializerMethodField(method_name="total_pedido")
-    class Meta:
-        model = Carrinho
-        fields =  ['id','produtos', 'total']
-
-
-    def total_pedido(self, cart: Carrinho):
-        items = cart.items.all()
-        total = sum([item.quantidade* item.produto.preco for item in items])
-        return total
     

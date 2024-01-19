@@ -139,18 +139,10 @@ class Produto(models.Model):
     def __str__(self):
         return self.nome
     
-class Carrinho(models.Model):
-    criado = models.DateField(auto_now_add=True)
-    
-class PedidoItem(models.Model):
-    cpf_user = models.ForeignKey(User, on_delete=models.CASCADE)
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
-    quantidade = models.IntegerField()
-    carrinho = models.ForeignKey(Carrinho, on_delete=models.CASCADE)
-
     
 class AvaliacaoUser(models.Model):
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
     descricao = models.CharField(max_length=300)
     nota = models.IntegerField()
-    user_email = models.CharField(max_length=50)
+    user = models.CharField(max_length=150)
+    
