@@ -36,6 +36,7 @@ ESTADOS = (
 
 class User(AbstractUser, PermissionsMixin):
     nome = models.CharField(max_length=180)
+    username = models.CharField(max_length=180)
     password = models.CharField(max_length=255)
     password_validacao = models.CharField(max_length=255)
     email= models.CharField(max_length=256,
@@ -140,9 +141,6 @@ class Produto(models.Model):
     
 class Carrinho(models.Model):
     criado = models.DateField(auto_now_add=True)
-
-    def __str__(self):
-        return str(self.id)
     
 class PedidoItem(models.Model):
     cpf_user = models.ForeignKey(User, on_delete=models.CASCADE)

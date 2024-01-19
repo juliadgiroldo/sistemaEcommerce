@@ -1,13 +1,18 @@
+import datetime
+import jwt
 from rest_framework import viewsets, status
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import  AllowAny
 from rest_framework.authentication import SessionAuthentication
 from .models import Categoria, Fornecedor, PedidoItem, User, Produto, AvaliacaoUser
-from . serializers import CarrinhoSerializer, CategoriaSerializer, FornecedorSerializer, LoginUserSerializer, PedidoFinalSerializer, UserCRiarContaSerializer, ProdutoSerializer,AvaliacaoUserSerializer
+from . serializers import CarrinhoSerializer, CategoriaSerializer, FornecedorSerializer, LoginUserSerializer, PedidoFinalSerializer, UserCriarContaSerializer, ProdutoSerializer,AvaliacaoUserSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
-from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin
+from rest_framework.exceptions import AuthenticationFailed
+from django.contrib.auth import authenticate, login
+
+from api import serializers
 
 class CategoriaViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
@@ -29,9 +34,6 @@ class ProdutoViewwSet(viewsets.ModelViewSet):
     }
     pagination_class = PageNumberPagination
 
-class PedidioFinalViewSet(viewsets.ModelViewSet):
-    queryset = PedidoItem.objects.all()
-    serializer_class = PedidoFinalSerializer
 class ForncedorViewSet(viewsets.ModelViewSet):
     queryset = Fornecedor.objects.all()
     serializer_class = FornecedorSerializer
@@ -42,7 +44,11 @@ class ForncedorViewSet(viewsets.ModelViewSet):
     }
     pagination_class = PageNumberPagination
 
-class CarrinhoViewSet(CreateModelMixin,RetrieveModelMixin, GenericViewSet):
+class PedidioFinalViewSet(viewsets.ModelViewSet):
+    queryset = PedidoItem.objects.all()
+    serializer_class = PedidoFinalSerializer
+
+class CarrinhoViewSet(viewsets.ModelViewSet):
     queryset = PedidoItem.objects.all()
     serializer_class = CarrinhoSerializer
 
@@ -53,6 +59,7 @@ class AvaliacaoUserViewSet(viewsets.ModelViewSet):
     filterset_fields = {
         'nota': ['exact']
     }
+    pagination_class = PageNumberPagination
 
     def get_serializer_context(self):
         return {"produto_id": self.kwargs.get("produto_id")}
@@ -60,7 +67,7 @@ class AvaliacaoUserViewSet(viewsets.ModelViewSet):
 class createAccountUser(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     queryset = User.objects.all()
-    serializer_class = UserCRiarContaSerializer
+    serializer_class = UserCriarContaSerializer
 
     def post(self, request):
         user_data = request.data
@@ -74,7 +81,7 @@ class createAccountUser(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors, status=400)
         
-class LoginUserViewSet(viewsets.ModelViewSet):
+class LoginUserAPIView(APIView):
     permission_classes = (AllowAny,)
     authentication_classes = (SessionAuthentication,)
     queryset = User.objects.all()
@@ -84,3 +91,5 @@ class LoginUserViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
