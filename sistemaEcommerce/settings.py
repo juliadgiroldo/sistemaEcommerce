@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,6 +24,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'rest_framework_simplejwt',
     'rest_framework',
+    'rest_framework_swagger',
     'django_filters',
     "django.contrib.admin",
     "django.contrib.auth",
@@ -38,6 +40,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_SCHEMA_CLASS':'rest_framework.schemas.coreapi.AutoSchema' 
 }
 
 
@@ -70,7 +73,7 @@ ROOT_URLCONF = "sistemaEcommerce.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, 'templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
